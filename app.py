@@ -1,19 +1,22 @@
 from flask import Flask
 from config import Config
 from extensions import db, migrate
-from models.episode import Episode
-from models.guest import Guest
-from models.appearance import Appearance
+from resources import api_bp
 
-app = Flask(__name__)
-app.config.from_object(Config)
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
 
-db.init_app(app)
-migrate.init_app(app, db)
+    # Initialize extensions
+    db.init_app(app)
+    migrate.init_app(app, db)
 
-# Optional: if you want db.create_all() on launch
-# with app.app_context():
-#     db.create_all()
+    # Register API blueprint
+    app.register_blueprint(api_bp, url_prefix="/api")
 
-if __name__ == '__main__':
+    return app
+
+
+if __name__ == "__main__":
+    app = create_app()
     app.run(debug=True)
